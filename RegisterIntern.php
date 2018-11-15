@@ -85,6 +85,19 @@
             }
             //created variable for intern table
             $tableName = "interns";
+            if($errors == 0){
+                $SQLstring = "SELECT count(*) FROM $tableName". 
+                " WHERE email='$email'";
+                $queryResult = mysqli_query($DBConnect,$SQLstring);
+                if($queryResult){
+                    $row = mysqli_fetch_row($queryResult);
+                    if($row[0] > 0){
+                        ++$errors;
+                        echo "<p>The email address entered (". htmlentities($email) . 
+                        ") is already registered.</p>\n";
+                    }
+                }
+            }
             //if no errors execute
             if($errors == 0){
                 $first = stripslashes($_POST['first']);
@@ -101,11 +114,20 @@
                 }else{
                     $internID = mysqli_insert_id($DBConnect);
                 }
-                echo "<p>Closing database \"$DBName\" connection.</p>\n";//debug
-             mysqli_close($DBConnect);
             }
     }
 }
+    if($errors == 0){
+        $internName = $first. " ". $last;
+        echo "<p>Thank you, $internName. ";
+        echo "Your new Intern ID is <strong>". 
+        $internID . "</strong>.</p>\n";
+    }
+
+    if($DBConnect){
+        echo "<p>Closing database \"$DBName\" connection.</p>\n";//debug
+        mysqli_close($DBConnect);
+    }
 
     //code to tell user to go back if their is errors
     if($errors > 0){
