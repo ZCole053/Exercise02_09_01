@@ -127,6 +127,10 @@
     if($DBConnect){
         echo "<p>Closing database \"$DBName\" connection.</p>\n";//debug
         mysqli_close($DBConnect);
+        echo "<form action='AvailableOpportunities.php' method='post'>\n";
+        echo "<input type='hidden' name='internID' value='$internID'>\n";
+        echo "<input type='submit' name='submit' value='View Available Opportunities'>\n";
+        echo "</form>";
     }
 
     //code to tell user to go back if their is errors
