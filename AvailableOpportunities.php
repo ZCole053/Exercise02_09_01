@@ -95,7 +95,7 @@
         //array to hold results
         $selectedOpportunities = array();
         $SQLstring = "SELECT opportunityID FROM $tableName".
-        " WHERE dateApproved IS NOT NULL";
+        " WHERE internID='$internID'";
         //could hav nothing or something
         $queryResult = mysqli_query($DBConnect,$SQLstring);
         if(mysqli_num_rows($queryResult) > 0){
@@ -135,8 +135,45 @@
         echo "<p>Closing database \"$DBName\" connection.</p>\n";//debug
         mysqli_close($DBConnect);
      }
-
+//code to display table to the user of what opportunties are available
      echo "<table border='1' width='100%>\n'";
+     echo "<tr>\n";
+     echo "<th style='background-color: cyan'>Company</th>\n";
+     echo "<th style='background-color: cyan'>City</th>\n";
+     echo "<th style='background-color: cyan'>Start Date</th>\n";
+     echo "<th style='background-color: cyan'>End Date</th>\n";
+     echo "<th style='background-color: cyan'>Position</th>\n";
+     echo "<th style='background-color: cyan'>Description</th>\n";
+     echo "<th style='background-color: cyan'>Status</th>\n";
+     echo "</tr>\n";
+     //for each the array into td rows
+     foreach ($opportunities as $opportunity) {
+         if(!in_array($opportunity['opportunityID'],$assignedOpportunities)){
+            echo "<tr>\n";
+            echo "<td>". htmlentities($opportunity['company']). "</td>\n";
+            echo "<td>". htmlentities($opportunity['city']). "</td>\n";
+            echo "<td>". htmlentities($opportunity['startDate']). "</td>\n";
+            echo "<td>". htmlentities($opportunity['endDate']). "</td>\n";
+            echo "<td>". htmlentities($opportunity['position']). "</td>\n";
+            echo "<td>". htmlentities($opportunity['description']). "</td>\n";
+            echo "<td>\n";
+            if(in_array($opportunity['opportunityID'], $selectedOpportunities)){
+                echo "Selected";
+                //already selected
+            }elseif($approvedOpportunities > 0){
+                echo "Open";
+            }else{
+                //who selected it 
+                echo "<a href='RequestOpportunity.php?".
+                "internID=$internID&".
+                "opportunityID=". 
+                $opportunity['opportunityID']. 
+                "'>Available</a>";
+            }
+            echo "</td>\n";
+            echo "</tr>\n";
+         }
+     }
      echo "</table>\n";
      echo "<p><a href='InternLogin.php'>Log Out</a></p>\n";
 

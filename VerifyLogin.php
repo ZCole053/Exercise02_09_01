@@ -61,10 +61,15 @@
     if($DBConnect){
         echo "<p>Closing database \"$DBName\" connection.</p>\n";//debug
         mysqli_close($DBConnect);
-        echo "<form action='AvailableOpportunities.php' method='post'>\n";
-        echo "<input type='hidden' name='internID' value='$internID'>\n";
-        echo "<input type='submit' name='submit' value='View Available Opportunities'>\n";
-        echo "</form>";
+//technique 1
+        //not gonna do this for now
+        // echo "<form action='AvailableOpportunities.php' method='post'>\n";
+        // echo "<input type='hidden' name='internID' value='$internID'>\n";
+        // echo "<input type='submit' name='submit' value='View Available Opportunities'>\n";
+        // echo "</form>";
+//technique 2
+        echo "<p><a href='AvailableOpportunities.php?". "internID=$internID'>Available Opportunities".
+        "</a></p>\n";
     }
 
     //display for user errors
