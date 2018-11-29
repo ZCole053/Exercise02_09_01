@@ -75,6 +75,21 @@ if($DBConnect){
     $body .= "<p>Closing database \"$DBName\" connection.</p>\n";//debug
     mysqli_close($DBConnect);
 }
+
+if($internID > 0){
+    $body .= "<p>Return to the ". "<a href='AvailableOpportunities.php?".
+    "internID=$internID'>Available Opportunities</a> page.</p>\n";
+}else{
+    $body .= "<p>Please ". "<a href='InternLogin.php'>".
+    "Register or Log In". "</a> to use this page.</p>\n";
+}
+
+if($errors == 0){
+    echo "Setting cookie<br>";
+    setcookie("LastRequestDate",
+    urlencode($displayDate),time()+60*60*24*7);
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -88,7 +103,7 @@ if($DBConnect){
 <h1>College Internship</h1>
 <h2>Opportunity Requested</h2>
     <?php
-    //desplays echos bellow html
+    //displays echos bellow html
     echo $body;
     ?>
 </body>

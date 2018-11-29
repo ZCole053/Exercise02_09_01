@@ -1,4 +1,7 @@
 <?php
+
+//continuing active session
+session_start();
     //variables
     $body = "";
     $errors = 0;
@@ -100,7 +103,8 @@
                     $body .=  "<p>Unable to connect to save you registration information 
                     error code: ". mysqli_error($DBConnect). "</p>\n";
                 }else{
-                    $internID = mysqli_insert_id($DBConnect);
+                    //$internID = mysqli_insert_id($DBConnect);
+                    $_SESSION['internID'] = mysqli_insert_id($DBConnect);
                 }
             }
     }
@@ -109,17 +113,19 @@
         $internName = $first. " ". $last;
         $body .=  "<p>Thank you, $internName. ";
         $body .=  "Your new Intern ID is <strong>". 
-        $internID . "</strong>.</p>\n";
+        $_SESSION['internID']  . "</strong>.</p>\n";
     }
 
     if($DBConnect){
         setcookie("internID", $internID);
         $body .=  "<p>Closing database \"$DBName\" connection.</p>\n";//debug
+        $body .= "<p><a href='AvailableOpportunities.php?". 
+        "PHPSESSID=". session_id(). "'>". "View Available Opportunities</a></p>\n";
         mysqli_close($DBConnect);
-        $body .=  "<form action='AvailableOpportunities.php' method='post'>\n";
-        $body .=  "<input type='hidden' name='internID' value='$internID'>\n";
-        $body .=  "<input type='submit' name='submit' value='View Available Opportunities'>\n";
-        $body .=  "</form>";
+        // $body .=  "<form action='AvailableOpportunities.php' method='post'>\n";
+        // $body .=  "<input type='hidden' name='internID' value='$internID'>\n";
+        // $body .=  "<input type='submit' name='submit' value='View Available Opportunities'>\n";
+        // $body .=  "</form>";
     }
 
     //code to tell user to go back if their is errors

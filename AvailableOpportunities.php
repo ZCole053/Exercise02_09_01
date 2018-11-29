@@ -18,6 +18,14 @@
     }
     //debug
     echo "\$internID: $internID\n";
+
+    //picks up cookie if it has been set if not it is set to empty
+    if(isset($_COOKIE['LastRequestDate'])){
+        $lastRequestDate = urldecode($_COOKIE['LastRequestDate']);
+    }else{
+        $lastRequestDate = "";
+    }
+
      //declaring variables
      $errors = 0;
      $hostname = "Localhost";
@@ -96,8 +104,8 @@
         $selectedOpportunities = array();
         $SQLstring = "SELECT opportunityID FROM $tableName".
         " WHERE internID='$internID'";
-        //could hav nothing or something
         $queryResult = mysqli_query($DBConnect,$SQLstring);
+        //could have nothing or something
         if(mysqli_num_rows($queryResult) > 0){
             while(($row = mysqli_fetch_row($queryResult)) != false){
                 $selectedOpportunities[] = $row[0];
@@ -135,6 +143,12 @@
         echo "<p>Closing database \"$DBName\" connection.</p>\n";//debug
         mysqli_close($DBConnect);
      }
+
+     if(!empty($lastRequestDate)){
+        echo "<p>You last requested an intership". 
+        " opportunity on $lastRequestDate.</p>\n";
+     }
+
 //code to display table to the user of what opportunties are available
      echo "<table border='1' width='100%>\n'";
      echo "<tr>\n";
