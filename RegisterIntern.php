@@ -117,7 +117,8 @@ session_start();
     }
 
     if($DBConnect){
-        setcookie("internID", $internID);
+        //setcookie("internID", $internID);
+        setcookie("internID", $_SESSION['internID']);
         $body .=  "<p>Closing database \"$DBName\" connection.</p>\n";//debug
         $body .= "<p><a href='AvailableOpportunities.php?". 
         "PHPSESSID=". session_id(). "'>". "View Available Opportunities</a></p>\n";

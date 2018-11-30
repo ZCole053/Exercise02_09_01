@@ -1,7 +1,10 @@
 <?php
+//starts or resumes session
     session_start();
-    echo "Session id:". session_id(). "<br>\n";
-
+    //clears out for a new array
+    $_SESSION = array();
+    //ends old session
+    session_destroy();
 ?>
 
 <!DOCTYPE html>

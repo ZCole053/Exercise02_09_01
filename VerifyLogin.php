@@ -1,3 +1,8 @@
+<?php
+session_start();
+echo "Session id:". session_id(). "<br>\n";//debug
+
+?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -50,7 +55,8 @@
             echo "<p>The email address/password combination entered is not valid.</p>\n";
         }else{
             $row = mysqli_fetch_assoc($queryResult);
-            $internID = $row['internID'];
+            //$internID = $row['internID'];
+            $_SESSION['internID'] = $row['internID'];
             $internName = $row['first']. " ". $row['last'];
             mysqli_free_result($queryResult);
             echo "<p>Welcome back, $internName!</p>\n";
@@ -68,7 +74,10 @@
         // echo "<input type='submit' name='submit' value='View Available Opportunities'>\n";
         // echo "</form>";
 //technique 2
-        echo "<p><a href='AvailableOpportunities.php?". "internID=$internID'>Available Opportunities".
+       // echo "<p><a href='AvailableOpportunities.php?". "internID=$internID'>Available Opportunities".
+        //"</a></p>\n";
+        echo "<p><a href='AvailableOpportunities.php?". "PHPSESSID=".session_id() .
+        "'>Available Opportunities".
         "</a></p>\n";
     }
 

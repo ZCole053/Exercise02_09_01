@@ -1,3 +1,8 @@
+<?php
+session_start();
+echo "Session id:". session_id(). "<br>\n";//debug
+?>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -11,13 +16,13 @@
     <?php
 
     //got here through post,get,or cookies
-    if(isset($_REQUEST['internID'])){
-        $internID = $_REQUEST['internID'];
-    }else{
-        $internID = -1;
-    }
-    //debug
-    echo "\$internID: $internID\n";
+    // if(isset($_REQUEST['internID'])){
+    //     $internID = $_REQUEST['internID'];
+    // }else{
+    //     $internID = -1;
+    // }
+    // //debug
+    // echo "\$internID: $internID\n";
 
     //picks up cookie if it has been set if not it is set to empty
     if(isset($_COOKIE['LastRequestDate'])){
@@ -58,7 +63,7 @@
      if($errors == 0){
          //searches for field with this information
         $SQLstring = "SELECT * FROM $tableName".
-        " WHERE internID='$internID'";
+        " WHERE internID='".$_SESSION['internID']. "'" ;
         $queryResult = mysqli_query($DBConnect,$SQLstring);
         //if it does not work it will send an error
         if(!$queryResult){
@@ -90,7 +95,7 @@
      if($errors == 0){
         $SQLstring = "SELECT COUNT(opportunityID)". 
             " FROM $tableName". 
-            " WHERE internID='$internID'".
+            " WHERE internID='". $_SESSION['internID']. "'".
             " AND dateApproved IS NOT NULL";
         $queryResult = mysqli_query($DBConnect,$SQLstring);
         if(mysqli_num_rows($queryResult) > 0){
@@ -103,7 +108,7 @@
         //array to hold results
         $selectedOpportunities = array();
         $SQLstring = "SELECT opportunityID FROM $tableName".
-        " WHERE internID='$internID'";
+        " WHERE internID='".$_SESSION['internID']. "'";
         $queryResult = mysqli_query($DBConnect,$SQLstring);
         //could have nothing or something
         if(mysqli_num_rows($queryResult) > 0){
@@ -179,8 +184,8 @@
             }else{
                 //who selected it 
                 echo "<a href='RequestOpportunity.php?".
-                "internID=$internID&".
-                "opportunityID=". 
+                "PHPSESSID=". session_id().
+                "&opportunityID=". 
                 $opportunity['opportunityID']. 
                 "'>Available</a>";
             }
