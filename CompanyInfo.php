@@ -6,11 +6,11 @@ session_start();
     $body = "";
     $errors = 0;
     $email = "";
+    $DBName = "professional_conference";
     $hostname = "localhost";
     $username = "adminer";
     $passwd = "doubt-drink-37";
     $DBConnect = false;
-    $DBName = "internships1";
 
     //checking the email field to validate
     if(empty($_POST['email'])){
@@ -59,14 +59,34 @@ session_start();
             $password2 ="";
         }
     }
+    
+    //connects to the data base and creates database if not made
+    if($errors == 0){
+        $DBConnect = mysqli_connect($hostname,$username,$passwd);
+        if(!$DBConnect){
+            $body .=  "<p>Connection Error: ". mysqli_connect_error(). "</p>\n";
+        }else{
+            $selected = mysqli_select_db($DBConnect,$DBName);
+            if(!$selected){
+                echo "<p>Could not select database, attempting to create database now.</p>\n";
+                $sql = "CREATE DATABASE $DBName";
+                if(mysqli_query($DBConnect,$sql)){
+                    echo "<p>Succesfully created the database.</p>\n";
+                    $selected = mysqli_select_db($DBConnect,$DBName);
+                }else{
+                    echo "<p>Could not create database error:". mysqli_error($DBConnect). " occured</p>\n";
+                }
+            }
+        }
+    }
 
 
 
     //displays if their is any error
     if($errors > 0){
-        $body .=  "<p>Errors have occured please click the link and go ". 
+        $body .=  "<p>Errors have occured when signing up please click the link and go ". 
         " <a href='index.php'><strong>Back</strong></a>" 
-        ." and fix them.</p>\n ";
+        ." and fix the sign up errors.</p>\n ";
     }
 
 ?>
@@ -80,21 +100,33 @@ session_start();
     <script src="modernizr.custom.65897.js"></script>
 </head>
 <body>
-<h1>Company Information</h1>
+<?php
+
+//displays error title
+if($errors > 0){
+?>
+<h1>Form Errors found</h1>
 <hr>
+<?php
+}
+?>
+
     <?php
     //displays error code or debug code
     echo $body;
     ?>
 
+<!-- displays form -->
 <?php
 if($errors == 0){
 ?>
-    <form action="" method="" >
+<h1>Company Information</h1>
+<hr>
+    <form action="SelectSeminar.php" method="post" >
     <p>Enter your Company name:
         <input type="text" name="Cname" >
     </p>
-    <p>Enter your Occupation:
+    <p>Enter Position held in company:
         <input type="text" name="Occup" >
     </p>
     </form>
