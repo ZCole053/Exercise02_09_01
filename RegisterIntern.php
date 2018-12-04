@@ -27,7 +27,7 @@ session_start();
             $email = "";
         }
     }
-    //validate email
+    //validate password
     if(empty($_POST['password'])){
         ++$errors;
         $body .=  "<p>You need to enter an password.</p>\n";
@@ -153,6 +153,7 @@ session_start();
 <h1>College internships</h1>
 <h2>Intern Registration</h2>
    <?php
+   //displays error code or debug code
         echo $body;
    ?>
 </body>
