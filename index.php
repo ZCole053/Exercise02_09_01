@@ -1,12 +1,3 @@
-<?php
-//starts or resumes session
-session_start();
-//clears out for a new array
-$_SESSION = array();
-//ends old session
-session_destroy();
-?>
-
 
 <!DOCTYPE html>
 <html>
@@ -19,7 +10,7 @@ session_destroy();
 <body>
 <h1>Conference Sign up</h1>
 <hr>
-    <form action="CompanyInfo.php?PHPSESSID=<?php echo session_id(); ?>" method="post">
+    <form action="CompanyInfo.php" method="post">
     <p>Enter your name: First
             <input type="text" name="first" >
             Last: 
@@ -41,5 +32,21 @@ session_destroy();
         <input type="reset" name="reset" value="Reset Sign up Form">
         <input type="submit" name="register" value="Register">
     </form>
+    <hr>
+<h1>Log In</h1>
+<form action="SelectSeminar.php" method="post">
+    <p>
+        Enter your e-mail address:
+        <input type="text" name="email" >
+     </p>
+    <p>
+        Enter your password:
+        <input type="password" name="password">
+     </p>
+    <p><em>(Passwords are case-sensitive and must be at least 6 characters long.)</em></p>
+    <input type="reset" name="reset" value="Reset Login Form">
+    <input type="submit" name="Login" value="Login">
+ </form>
+
 </body>
 </html>

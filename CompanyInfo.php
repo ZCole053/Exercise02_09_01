@@ -1,6 +1,4 @@
 <?php
-//continuing active session
-session_start();
 
     //variables
     $body = "";
@@ -21,7 +19,7 @@ session_start();
         //regular expression to validate email
         if(preg_match("/^[\w-]+(\.[\w-]+)*@[\w-]+(\.[w-]+)*(\.[A-Za-z]{2,})$/i",$email) == 0){
             ++$errors;
-            $body .=  "<p>A valid e-mail is required.</p>\n";
+            $body .= "<p>A valid e-mail is required.</p>\n";
             $email = "";
         }
     }
@@ -49,14 +47,14 @@ session_start();
             ++$errors;
             $body .=  "<p>The password is too short.</p>\n";
             $password = "";
-            $password2 ="";
+            $password2 = "";
         }
         //checks to see if passwords match
         if($password <> $password2){
             ++$errors;
             $body .=  "<p>The password do not match.</p>\n";
             $password = "";
-            $password2 ="";
+            $password2 = "";
         }
     }
     
@@ -68,13 +66,13 @@ session_start();
         }else{
             $selected = mysqli_select_db($DBConnect,$DBName);
             if(!$selected){
-                echo "<p>Could not select database, attempting to create database now.</p>\n";
+                $body .= "<p>Could not select database, attempting to create database now.</p>\n";
                 $sql = "CREATE DATABASE $DBName";
                 if(mysqli_query($DBConnect,$sql)){
-                    echo "<p>Succesfully created the database.</p>\n";
+                    $body .= "<p>Succesfully created the database.</p>\n";
                     $selected = mysqli_select_db($DBConnect,$DBName);
                 }else{
-                    echo "<p>Could not create database error:". mysqli_error($DBConnect). " occured</p>\n";
+                    $body .= "<p>Could not create database error:". mysqli_error($DBConnect). " occured</p>\n";
                 }
             }
         }
@@ -122,17 +120,44 @@ if($errors == 0){
 ?>
 <h1>Company Information</h1>
 <hr>
-    <form action="SelectSeminar.php" method="post" >
+    <form action="ValidateData.php" method="post" >
     <p>Enter your Company name:
         <input type="text" name="Cname" >
     </p>
     <p>Enter Position held in company:
         <input type="text" name="Occup" >
     </p>
+    <p> Number of years at the company:
+        <input type="number" name="Wyears" >
+    </p>
+    <input type="reset" name="reset" value="Reset Form">
+    <input type="submit" name="register" value="Register">
     </form>
 
 <?php
 }
+
+//creating table variable
+$tablename = "user_info";
+//creating table if table is not already made
+if($errors == 0){
+    $selected = false;
+    $sql =  "SHOW TABLES LIKE '$tablename'";
+    $result = mysqli_query($DBConnect,$sql);
+    if(mysqli_num_rows($result) === 0){
+        echo "<p>$tablename table does not exist, attempting to create a table now.</p>\n";//error message
+        $sql = "CREATE TABLE $tablename(UserID SMALLINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+         Fname VARCHAR(40), Lname VARCHAR(40), email VARCHAR(40), password2 VARCHAR(40),
+         Companyname VARCHAR(40), occupation VARCHAR(40), Corkyears SMALLINT)";
+         $result = mysqli_query($DBConnect,$sql);
+         if($result === false){
+          $selected = false;
+          echo "<p>Unable to create the table $tablename.</p>";//error message
+         }
+         echo "<p>$tablename was successfully created</p>\n";//error message
+    }
+}
+
 ?>
 </body>
 </html>
