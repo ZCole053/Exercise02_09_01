@@ -87,6 +87,17 @@
         ." and fix the sign up errors.</p>\n ";
     }
 
+
+    if($errors == 0){
+        $body .= "Setting cookie";
+        setcookie("first",$_POST['first'],time()+60*60*24*7);
+        setcookie("last",$_POST['last'],time()+60*60*24*7);
+        setcookie("email",$_POST['email'],time()+60*60*24*7);
+        setcookie("password",$_POST['password'],time()+60*60*24*7);
+    }
+
+
+
 ?>
 
 
@@ -94,7 +105,7 @@
 <html>
 <head>
     <meta charset="utf-8" />
-    <title>Page Title</title>
+    <title>Company Info</title>
     <script src="modernizr.custom.65897.js"></script>
 </head>
 <body>
@@ -131,7 +142,7 @@ if($errors == 0){
         <input type="number" name="Wyears" >
     </p>
     <input type="reset" name="reset" value="Reset Form">
-    <input type="submit" name="register" value="Register">
+    <input type="submit" name="submit" value="Register">
     </form>
 
 <?php
@@ -156,6 +167,11 @@ if($errors == 0){
          }
          echo "<p>$tablename was successfully created</p>\n";//error message
     }
+}
+
+if($DBConnect){
+    echo "<p>Closing database \"$DBName\" connection.</p>\n";//debug 
+    mysqli_close($DBConnect); 
 }
 
 ?>

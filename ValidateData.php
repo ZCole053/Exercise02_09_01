@@ -9,7 +9,6 @@ $passwd = "doubt-drink-37";
 $DBConnect = false;
 
 if(isset($_POST['submit'])){
-    echo "we are in part 1";
     $DBConnect = mysqli_connect($hostname,$username,$passwd);
     if(!$DBConnect){
         ++$errors;
@@ -27,15 +26,14 @@ if(isset($_POST['submit'])){
 
     
     if($errors == 0){
-        echo "we are in the code";
         //creates data filled variables
-        $first = stripslashes($_POST['first']);
-        $last = stripslashes($_POST['last']);
-        $email = stripslashes($_POST['email']);
-        $password = stripslashes($_POST['password']);
-        $Cname = stripslashes($_POST['Cname']);
-        $Occup = stripslashes($_POST['Occup']);
-        $Wyears = stripslashes($_POST['Wyears']);
+        $first = stripslashes($_REQUEST['first']);
+        $last = stripslashes($_REQUEST['last']);
+        $email = stripslashes($_REQUEST['email']);
+        $password = stripslashes($_REQUEST['password']);
+        $Cname = stripslashes($_REQUEST['Cname']);
+        $Occup = stripslashes($_REQUEST['Occup']);
+        $Wyears = stripslashes($_REQUEST['Wyears']);
         //creating variable for table name
         $tableName = "user_info";
         //if no errors check for duplicates
@@ -49,20 +47,26 @@ if(isset($_POST['submit'])){
                         ++$errors;
                         $body .=  "<p>The email address entered (". htmlentities($email) . 
                         ") is already registered.</p>\n";
+                    }else{
+                        $SQLstring = "INSERT INTO $tableName".
+                        " (Fname , Lname, email, password2, Companyname, occupation, Corkyears)".
+                        "  VALUES('$first','$last','$email', ".
+                        "'". md5($password). "', '$Cname', '$Occup', '$Wyears' )";
+                        $queryResult = mysqli_query($DBConnect, $SQLstring);
+                        if(!$queryResult){
+                            ++$errors;
+                            $body .=  "<p>Unable to connect to save you registration information 
+                            error code: ". mysqli_error($DBConnect). "</p>\n";
+                        }
                     }
                 }
             }
-        $SQLstring = "INSERT INTO $tableName".
-        " (Fname , Lname, email, password2, Companyname, occupation, Corkyears)".
-        "  ALUES('$first','$last','$email', ".// purpose error
-        "'". md5($password). "', '$Cname', '$Occup', '$Wyears' )";
-        //$queryResult = mysqli_query($DBConnect, $SQLstring);
-        if(!$queryResult){
-            ++$errors;
-            $body .=  "<p>Unable to connect to save you registration information 
-            error code: ". mysqli_error($DBConnect). "</p>\n";
-        }
     }
+}
+
+if($DBConnect){
+    $body .= "<p>Closing database \"$DBName\" connection.</p>\n";//debug 
+    mysqli_close($DBConnect); 
 }
 
 ?>
@@ -96,7 +100,7 @@ if($errors > 0 ){
 ?>
 <h1>Form Incomplete</h1>
 <p>An error has occured uploading your data please go back and retype answers in form.
-Click <strong><a href="CompanyInfo.php">here </a></strong> to go back</p>
+Click <strong><a href="index.php">here </a></strong> to go back</p>
 
 
 <?php
