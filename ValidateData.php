@@ -27,10 +27,10 @@ if(isset($_POST['submit'])){
     
     if($errors == 0){
         //creates data filled variables
-        $first = stripslashes($_REQUEST['first']);
-        $last = stripslashes($_REQUEST['last']);
-        $email = stripslashes($_REQUEST['email']);
-        $password = stripslashes($_REQUEST['password']);
+        $first = stripslashes($_COOKIE['first']);
+        $last = stripslashes($_COOKIE['last']);
+        $email = stripslashes($_COOKIE['email']);
+        $password = stripslashes($_COOKIE['password']);
         $Cname = stripslashes($_REQUEST['Cname']);
         $Occup = stripslashes($_REQUEST['Occup']);
         $Wyears = stripslashes($_REQUEST['Wyears']);
@@ -49,7 +49,7 @@ if(isset($_POST['submit'])){
                         ") is already registered.</p>\n";
                     }else{
                         $SQLstring = "INSERT INTO $tableName".
-                        " (Fname , Lname, email, password2, Companyname, occupation, Corkyears)".
+                        " (Fname , Lname, email, password2, Companyname, occupation, Workyears)".
                         "  VALUES('$first','$last','$email', ".
                         "'". md5($password). "', '$Cname', '$Occup', '$Wyears' )";
                         $queryResult = mysqli_query($DBConnect, $SQLstring);

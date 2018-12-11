@@ -8,6 +8,7 @@
    $DBConnect = false;
    $DBName = "professional_conference";
    $tableName = "user_info";
+    
 
  //opening connection 
 
@@ -16,13 +17,13 @@
         $DBConnect = mysqli_connect($hostname,$username,$passwd);
         if(!$DBConnect){
             ++$errors;
-            echo "<p>Unable to connect to database server error code: ". mysqli_connect_error(). 
+            $body .= "<p>Unable to connect to database server error code: ". mysqli_connect_error(). 
             "</p>\n";
         }else{
             $result = mysqli_select_db($DBConnect,$DBName);
             if(!$result){
                 ++$errors;
-                echo "<p>Unable to connect to select the database \"$DBName\" error code: 
+                $body .= "<p>Unable to connect to select the database \"$DBName\" error code: 
                 ". mysqli_error($DBConnect). "</p>\n";
             }
         }
@@ -37,13 +38,79 @@
         $queryResult = mysqli_query($DBConnect,$SQLstring);
         if(mysqli_num_rows($queryResult) == 0){
             ++$errors;
-            echo "<p>The email address/password combination entered is not valid.</p>\n";
+            $body .= "<p>The email address/password combination entered is not valid.</p>\n";
         }else{
             $row = mysqli_fetch_assoc($queryResult); 
             $userID= $row['UserID']; 
+            $body .= "\$usernameID: $userID ";//debug
             $userName = $row['Fname']. " ". $row['Lname']; 
             mysqli_free_result($queryResult); 
-            echo "<p>Welcome back, $userName!</p>\n"; 
+            $body .= "<p>Welcome back, $userName!</p>\n"; 
+        }
+    }
+
+
+    if($errors == 0){
+        $SQLstring = "SELECT COUNT(UserID)". 
+            " FROM $tableName". 
+            " WHERE UserID ='$userID'";
+            $queryResult = mysqli_query($DBConnect,$SQLstring);
+            if(mysqli_num_rows($queryResult) > 0){
+                $row = mysqli_fetch_row($queryResult);
+                $approvedOpportunities = $row[0];
+                mysqli_free_result($queryResult);
+            }
+        
+        // gets the user number and puts it in a array
+        $selectedSeminar = array(); 
+        $SQLstring = "SELECT UserID FROM $tableName". 
+        " WHERE SelectSeminar IS NOT NULL"; 
+        //could hav nothing or something 
+        $queryResult = mysqli_query($DBConnect,$SQLstring); 
+        if(mysqli_num_rows($queryResult) > 0){ 
+            while(($row = mysqli_fetch_row($queryResult)) != false){ 
+                $selectedSeminar[] = $row[0]; 
+            } 
+            mysqli_free_result($queryResult); 
+        } 
+// assigns the array 
+        $assignedSeminar = array();
+        $SQLstring = "SELECT UserID FROM $tableName".
+        " WHERE SelectSeminar IS NOT NULL";
+        $queryResult = mysqli_query($DBConnect,$SQLstring);
+        if(mysqli_num_rows($queryResult) > 0){
+            while(($row = mysqli_fetch_row($queryResult)) != false){
+                $assignedSeminar[] = $row[0];
+            }
+            mysqli_free_result($queryResult);
+        }
+    }
+
+
+    //test not required
+    if($userID < 0){
+        ++$errors;
+        $body .= "<p>Invalid Intern ID!</p>\n";
+    }
+
+
+    //creating new table
+    $tablename = "seminar_info";
+    if($errors == 0){
+        $selected = false;
+        $sql =  "SHOW TABLES LIKE '$tablename'";
+        $result = mysqli_query($DBConnect,$sql);
+        if(mysqli_num_rows($result) === 0){
+            $body .= "<p>$tablename table does not exist, attempting to create a table now.</p>\n";//error message
+            $sql = "CREATE TABLE $tablename(SeminarID SMALLINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+            Seminar VARCHAR(40), StartTime SMALLINT, EndTime SMALLINT,
+            JobType VARCHAR(40), Description VARCHAR(250))";
+             $result = mysqli_query($DBConnect,$sql);
+             if($result === false){
+              $selected = false;
+              $body .= "<p>Unable to create the table $tablename.</p>";//error message
+             }
+             $body .= "<p>$tablename was successfully created</p>\n";//error message
         }
     }
 
@@ -72,6 +139,20 @@ if($errors == 0){
 
 <?php
  echo $body;
+
+echo "<table border='1' width='100%>\n'"; 
+echo "<tr>\n"; 
+echo "<th>Seminar</th>\n";
+echo "<th>Start Time</th>\n";
+echo "<th>End Time</th>\n";
+echo "<th>End Date</th>\n";
+echo "<th>Job type</th>\n";
+echo "<th>Description</th>\n";
+echo "<th>Status</th>\n";
+echo "</tr>\n"; 
+
+echo "</table>\n"; 
+echo "<p><a href='index.php'>Log Out</a></p>\n"; 
 }
 
 //displays error

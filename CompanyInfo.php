@@ -159,7 +159,7 @@ if($errors == 0){
         echo "<p>$tablename table does not exist, attempting to create a table now.</p>\n";//error message
         $sql = "CREATE TABLE $tablename(UserID SMALLINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
          Fname VARCHAR(40), Lname VARCHAR(40), email VARCHAR(40), password2 VARCHAR(40),
-         Companyname VARCHAR(40), occupation VARCHAR(40), Corkyears SMALLINT)";
+         Companyname VARCHAR(40), occupation VARCHAR(40), Workyears SMALLINT, SelectSeminar DATE)";
          $result = mysqli_query($DBConnect,$sql);
          if($result === false){
           $selected = false;
