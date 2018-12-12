@@ -169,6 +169,46 @@ if($errors == 0){
     }
 }
 
+   //creating new table
+   $tablename = "seminar_info";
+   if($errors == 0){
+       $selected = false;
+       $sql =  "SHOW TABLES LIKE '$tablename'";
+       $result = mysqli_query($DBConnect,$sql);
+       if(mysqli_num_rows($result) === 0){
+           $body .= "<p>$tablename table does not exist, attempting to create a table now.</p>\n";//error message
+           $sql = "CREATE TABLE $tablename(SeminarID SMALLINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+           Seminar VARCHAR(40), StartTime SMALLINT, EndTime SMALLINT,
+           JobType VARCHAR(40), Description VARCHAR(250))";
+            $result = mysqli_query($DBConnect,$sql);
+            if($result === false){
+             $selected = false;
+             $body .= "<p>Unable to create the table $tablename.</p>";//error message
+            }
+            $body .= "<p>$tablename was successfully created</p>\n";//error message
+       }
+   }
+
+     //Table to hold the assigned seminars
+    $tablename = "assigned_seminars";
+    if($errors == 0){
+        $selected = false;
+        $sql =  "SHOW TABLES LIKE '$tablename'";
+        $result = mysqli_query($DBConnect,$sql);
+        if(mysqli_num_rows($result) === 0){
+            $body .= "<p>$tablename table does not exist, attempting to create a table now.</p>\n";//error message
+            $sql = "CREATE TABLE $tablename(SeminarID SMALLINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+            UserID SMALLINT, dateSelected SMALLINT, dateApproved SMALLINT)";
+            $result = mysqli_query($DBConnect,$sql);
+            if($result === false){
+                $selected = false;
+                $body .= "<p>Unable to create the table $tablename.</p>";//error message
+            }else{
+                $body .= "<p>$tablename was successfully created</p>\n";//error message
+            }
+        }
+    }
+
 if($DBConnect){
     echo "<p>Closing database \"$DBName\" connection.</p>\n";//debug 
     mysqli_close($DBConnect); 

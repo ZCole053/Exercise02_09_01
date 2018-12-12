@@ -1,5 +1,6 @@
 <?php
    //declaring variables
+
    $body = "";
    $errors = 0;
    $hostname = "Localhost";
@@ -29,7 +30,9 @@
         }
     }
 
-
+ 
+    //using $tableName to switch between tables
+    $tablename = "user_info";
     if($errors == 0){
         $SQLstring = "SELECT UserID, Fname, Lname".
         " FROM $tableName" .
@@ -50,10 +53,12 @@
     }
 
 
+    $tableName = "assigned_seminars";
     if($errors == 0){
-        $SQLstring = "SELECT COUNT(UserID)". 
+        $SQLstring = "SELECT COUNT(SeminarID)". 
             " FROM $tableName". 
-            " WHERE UserID ='$userID'";
+            " WHERE UserID='$userID'".
+            " AND dateApproved IS NOT NULL";
             $queryResult = mysqli_query($DBConnect,$SQLstring);
             if(mysqli_num_rows($queryResult) > 0){
                 $row = mysqli_fetch_row($queryResult);
@@ -63,8 +68,8 @@
         
         // gets the user number and puts it in a array
         $selectedSeminar = array(); 
-        $SQLstring = "SELECT UserID FROM $tableName". 
-        " WHERE SelectSeminar IS NOT NULL"; 
+        $SQLstring = "SELECT SeminarID FROM $tableName". 
+        " WHERE UserID='$userID'"; 
         //could hav nothing or something 
         $queryResult = mysqli_query($DBConnect,$SQLstring); 
         if(mysqli_num_rows($queryResult) > 0){ 
@@ -72,11 +77,11 @@
                 $selectedSeminar[] = $row[0]; 
             } 
             mysqli_free_result($queryResult); 
-        } 
+        }
 // assigns the array 
         $assignedSeminar = array();
-        $SQLstring = "SELECT UserID FROM $tableName".
-        " WHERE SelectSeminar IS NOT NULL";
+        $SQLstring = "SELECT SeminarID FROM $tableName".
+        " WHERE dateApproved IS NOT NULL";
         $queryResult = mysqli_query($DBConnect,$SQLstring);
         if(mysqli_num_rows($queryResult) > 0){
             while(($row = mysqli_fetch_row($queryResult)) != false){
@@ -84,7 +89,22 @@
             }
             mysqli_free_result($queryResult);
         }
+
+    //change table name again
+    $tableName = "seminar_info";
+    $opportunities = array();
+        $SQLstring = "SELECT SeminarID, Seminar,".
+        " StartTime, EndTime, JobType, Description".
+        " From $tableName";
+        $queryResult = mysqli_query($DBConnect,$SQLstring);
+        if(mysqli_num_rows($queryResult) > 0){
+            while(($row = mysqli_fetch_assoc($queryResult)) != false){
+                $opportunities[] = $row;
+            }
+            mysqli_free_result($queryResult);
+        }
     }
+    
 
 
     //test not required
@@ -94,25 +114,6 @@
     }
 
 
-    //creating new table
-    $tablename = "seminar_info";
-    if($errors == 0){
-        $selected = false;
-        $sql =  "SHOW TABLES LIKE '$tablename'";
-        $result = mysqli_query($DBConnect,$sql);
-        if(mysqli_num_rows($result) === 0){
-            $body .= "<p>$tablename table does not exist, attempting to create a table now.</p>\n";//error message
-            $sql = "CREATE TABLE $tablename(SeminarID SMALLINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-            Seminar VARCHAR(40), StartTime SMALLINT, EndTime SMALLINT,
-            JobType VARCHAR(40), Description VARCHAR(250))";
-             $result = mysqli_query($DBConnect,$sql);
-             if($result === false){
-              $selected = false;
-              $body .= "<p>Unable to create the table $tablename.</p>";//error message
-             }
-             $body .= "<p>$tablename was successfully created</p>\n";//error message
-        }
-    }
 
     if($DBConnect){
         $body .= "<p>Closing database \"$DBName\" connection.</p>\n";//debug 
@@ -145,11 +146,36 @@ echo "<tr>\n";
 echo "<th>Seminar</th>\n";
 echo "<th>Start Time</th>\n";
 echo "<th>End Time</th>\n";
-echo "<th>End Date</th>\n";
 echo "<th>Job type</th>\n";
 echo "<th>Description</th>\n";
 echo "<th>Status</th>\n";
 echo "</tr>\n"; 
+foreach ($opportunities as $opportunity) {
+    if(!in_array($opportunity['SeminarID'],$assignedSeminar)){
+        echo "<tr>\n";
+            echo "<td>". htmlentities($opportunity['Seminar']). "</td>\n";
+            echo "<td>". htmlentities($opportunity['StartTime']). "</td>\n";
+            echo "<td>". htmlentities($opportunity['EndTime']). "</td>\n";
+            echo "<td>". htmlentities($opportunity['JobType']). "</td>\n";
+            echo "<td>". htmlentities($opportunity['Description']). "</td>\n";
+            echo "<td>\n";
+            if(in_array($opportunity['SeminarID'], $selectedSeminar)){
+                echo "Selected";
+                //already selected
+            }elseif($approvedOpportunities > 0){
+                echo "Open";
+            }else{ 
+                //who selected it  
+                echo "<a href='.php?". //add next page
+                "UserID=$userID&". 
+                "SeminarID=".  
+                $opportunity['SeminarID'].  
+                "'>Available</a>"; 
+            } 
+            echo "</td>\n"; 
+            echo "</tr>\n";
+    }
+}
 
 echo "</table>\n"; 
 echo "<p><a href='index.php'>Log Out</a></p>\n"; 
