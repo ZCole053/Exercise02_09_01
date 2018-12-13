@@ -113,11 +113,14 @@
         $body .= "<p>Invalid Intern ID!</p>\n";
     }
 
-
-
     if($DBConnect){
-        $body .= "<p>Closing database \"$DBName\" connection.</p>\n";//debug 
         mysqli_close($DBConnect); 
+    }
+
+//sets the
+    if($errors == 0){
+        $body .= "Setting cookie";
+        setcookie("UserID",$userID,time()+60*60*24*7);
     }
 }
 ?>
@@ -166,7 +169,7 @@ foreach ($opportunities as $opportunity) {
                 echo "Open";
             }else{ 
                 //who selected it  
-                echo "<a href='.php?". //add next page
+                echo "<a href='ConfirmSelction.php?". //add next page
                 "UserID=$userID&". 
                 "SeminarID=".  
                 $opportunity['SeminarID'].  
